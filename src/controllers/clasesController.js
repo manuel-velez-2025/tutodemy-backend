@@ -60,7 +60,7 @@ const obtenerClases = async (req, res) => {
             WHERE c.id NOT IN (
                 SELECT clase_id FROM inscripciones WHERE tutorado_id = $1
             )
-            GROUP BY c.id, u.nombres;
+            GROUP BY c.id, c.nombre, c.ubicacion, c.precio, u.nombres;
         `;
         const respuesta = await pool.query(query, [alumno_id]);
         res.json(respuesta.rows); 
@@ -89,7 +89,7 @@ const obtenerMisClasesCreadas = async (req, res) => {
             FROM clases c
             LEFT JOIN horarios h ON c.id = h.clase_id
             WHERE c.tutor_id = $1
-            GROUP BY c.id;
+            GROUP BY c.id, c.nombre, c.ubicacion, c.precio;
         `;
         const respuesta = await pool.query(query, [tutor_id]);
 
@@ -136,7 +136,6 @@ const eliminarClase = async (req, res) => {
     const tutor_id = req.usuario.id; 
 
     try {
-    
         await pool.query('DELETE FROM horarios WHERE clase_id = $1', [clase_id]);
 
         const resultado = await pool.query('DELETE FROM clases WHERE id = $1 AND tutor_id = $2 RETURNING *', [clase_id, tutor_id]);
@@ -189,6 +188,7 @@ const actualizarClase = async (req, res) => {
         res.status(500).json({ error: "Error al actualizar la clase." });
     }
 };
+
 const obtenerMisAlumnosGeneral = async (req, res) => {
     const tutor_id = req.usuario.id;
 
