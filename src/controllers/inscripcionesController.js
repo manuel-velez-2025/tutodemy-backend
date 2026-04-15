@@ -52,6 +52,7 @@ const obtenerMisInscripciones = async (req, res) => {
         res.status(500).json({ error: "Error al obtener tus inscripciones." });
     }
 };
+
 const obtenerMisClasesInscritas = async (req, res) => {
     const alumno_id = req.usuario.id;
 
@@ -74,7 +75,7 @@ const obtenerMisClasesInscritas = async (req, res) => {
             JOIN usuarios u ON c.tutor_id = u.id
             LEFT JOIN horarios h ON c.id = h.clase_id
             WHERE i.tutorado_id = $1
-            GROUP BY c.id, u.nombres, i.fecha_inscripcion;
+            GROUP BY c.id, c.nombre, c.ubicacion, c.precio, u.nombres, i.fecha_inscripcion;
         `;
         const respuesta = await pool.query(query, [alumno_id]);
         res.json(respuesta.rows); 
